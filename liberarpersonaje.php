@@ -12,7 +12,7 @@ if($_GET['act']=="do") {
   $char = new char($cdb);
   $act = new account($rdb);
   $auth = $act->login($_POST['user'],$_POST['pass']);
-  if($auth="1") {
+  if($auth=="1") {
     $guid = $char->getGuid($_POST['char']);
     $aid = $act->getId($_POST['user']);
     $cid = $char->getAccountId($guid);

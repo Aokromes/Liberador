@@ -80,7 +80,7 @@ class account
     */
     public function getId($username)
     {
-        $username = $this->mysql->escape_string($user);
+        $username = $this->mysql->escape_string($username);
         $sql = $this->mysql->retrieve("SELECT `id` FROM `account` WHERE `username` = '$username' LIMIT 1");
         $row = mysqli_fetch_array($sql);
         return $row['id'];
