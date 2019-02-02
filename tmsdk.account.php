@@ -27,11 +27,11 @@ class account
     */
     public function ban($id,$time,$bannedby="",$reason="")
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $bandate = time();
         $unbandate = $bandate + $time;
-        $bannedby = mysql_real_escape_string($bannedby);
-        $reason = mysql_real_escape_string($reason);
+        $bannedby = mysqli_real_escape_string($bannedby);
+        $reason = mysqli_real_escape_string($reason);
         $this->mysql->send("INSERT INTO `account_banned` (id,bandate,unbandate,bannedby,banreason,active) VALUES ('$id','$bandate','$unbandate','$bannedby','$reason','1')");
         return true;
     }
@@ -42,9 +42,9 @@ class account
     */
     public function getEmail($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $sql = $this->mysql->retrieve("SELECT `email` FROM `account` WHERE `id` = '$id' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['email'];
     }
 
@@ -55,9 +55,9 @@ class account
     */
     public function getExpansion($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $sql = $this->mysql->retrieve("SELECT `expansion` FROM `account` WHERE `id` = '$id' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['expansion'];
     }
 
@@ -68,9 +68,9 @@ class account
     */
     public function getGmLevel($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $sql = $this->mysql->retrieve("SELECT `gmlevel` FROM `account` WHERE `id` = '$id' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['gmlevel'];
     }
 
@@ -80,9 +80,9 @@ class account
     */
     public function getId($username)
     {
-        $username = mysql_real_escape_string($username);
+        $username = mysqli_real_escape_string($username);
         $sql = $this->mysql->retrieve("SELECT `id` FROM `account` WHERE `username` = '$username' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['id'];
     }
 
@@ -93,10 +93,10 @@ class account
     */
     public function getIPBanStatus($ip)
     {
-        $ip = mysql_real_escape_string($ip);
+        $ip = mysqli_real_escape_string($ip);
         $date = time();
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `ip_banned` WHERE `ip` = '$ip' AND `unbandate` > '$date' OR `ip` = '$ip' AND `bandate` = `unbandate` LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['count'];
     }
 
@@ -106,7 +106,7 @@ class account
     public function getNumAccountsOnline()
     {
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `account` WHERE `online` = '1'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return intval($row['count']);
     }
 
@@ -116,9 +116,9 @@ class account
     */
     public function getUsername($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $sql = $this->mysql->retrieve("SELECT `username` FROM `account` WHERE `id` = '$id' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['username'];
     }
 
@@ -131,8 +131,8 @@ class account
     */
     public function lock($id,$ip)
     {
-        $id = mysql_real_escape_string($id);
-        $ip = mysql_real_escape_string($ip);
+        $id = mysqli_real_escape_string($id);
+        $ip = mysqli_real_escape_string($ip);
         $this->mysql->send("UPDATE `account` SET `locked` = '1', `last_ip` = '$ip' WHERE `id` = '$id'");
         return true;
     }
@@ -145,20 +145,20 @@ class account
     */
     public function login($user,$pass)
     {
-        $user = mysql_real_escape_string($user);
-        $pass = mysql_real_escape_string($pass);
+        $user = mysqli_real_escape_string($user);
+        $pass = mysqli_real_escape_string($pass);
 
         $user = strtoupper($user);
         $pass = strtoupper($pass);
         $pass_hash = SHA1($user.':'.$pass);
 
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count`,`id` FROM `account` WHERE `username` = '".$user."' AND `sha_pass_hash` = '".$pass_hash."' GROUP BY id LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         $count = $row['count'];
         $id = $row['id'];
 
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `account_banned` WHERE `id` = '".$id."' AND `active` = '1' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         if($row['count'] > 0) return 2;
         if($count > 0) return 1;
@@ -180,12 +180,12 @@ class account
     */
     public function register($user,$pass,$email="",$ip="",$expansion = 0,$id="")
     {
-        $user = mysql_real_escape_string($user);
-        $pass = mysql_real_escape_string($pass);
-        $email = mysql_real_escape_string($email);
-        $ip = mysql_real_escape_string($ip);
-        $expansion = mysql_real_escape_string($expansion);
-        $id = mysql_real_escape_string($id);
+        $user = mysqli_real_escape_string($user);
+        $pass = mysqli_real_escape_string($pass);
+        $email = mysqli_real_escape_string($email);
+        $ip = mysqli_real_escape_string($ip);
+        $expansion = mysqli_real_escape_string($expansion);
+        $id = mysqli_real_escape_string($id);
 
         if(strlen($pass) > 16) return 0;
 
@@ -198,7 +198,7 @@ class account
         $query = "SELECT COUNT(*) AS `count` FROM `account` WHERE `username` = '$user'";
         if($email != "") $query .= " OR `email` = '$email'";
         $sql = $this->mysql->retrieve($query);
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         $count = $row['count'];
 
         if($count > 0) return 3;
@@ -222,8 +222,8 @@ class account
     */
     public function setGmLevel($id,$level)
     {
-        $id = mysql_real_escape_string($id);
-        $level = mysql_real_escape_string($level);
+        $id = mysqli_real_escape_string($id);
+        $level = mysqli_real_escape_string($level);
         $this->mysql->retrieve("UPDATE `account` SET `gmlevel` = '$level' WHERE `id` = '$id' LIMIT 1");
         return true;
     }
@@ -236,10 +236,10 @@ class account
     */
     public function setEmail($id,$newemail)
     {
-        $id = mysql_real_escape_string($id);
-        $newemail = mysql_real_escape_string($newemail);
+        $id = mysqli_real_escape_string($id);
+        $newemail = mysqli_real_escape_string($newemail);
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `account` WHERE `email` = '$newemail'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         if($row['count'] > 0) return false;
         $this->mysql->send("UPDATE `account` SET `email` = '$newemail' WHERE `id` = $id");
@@ -254,8 +254,8 @@ class account
     */
     public function setExpansion($id,$nexp)
     {
-        $id = mysql_real_escape_string($id);
-        $nexp = mysql_real_escape_string($nexp);
+        $id = mysqli_real_escape_string($id);
+        $nexp = mysqli_real_escape_string($nexp);
         $this->mysql->send("UPDATE `account` SET `expansion` = '$nexp' WHERE `id` = $id");
         return true;
     }
@@ -268,13 +268,13 @@ class account
     */
     public function setPassword($id,$newpass)
     {
-        $id = mysql_real_escape_string($id);
-        $newpass = mysql_real_escape_string($newpass);
+        $id = mysqli_real_escape_string($id);
+        $newpass = mysqli_real_escape_string($newpass);
 
         if(strlen($newpass) > 16) return false;
 
         $sql = $this->mysql->retrieve("SELECT `username` FROM `account` WHERE `id` = '$id' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         $pass_hash = SHA1(strtoupper($row['username'].":".strtoupper($newpass)));
 
@@ -291,7 +291,7 @@ class account
     */
     public function unban($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $this->mysql->send("DELETE FROM `account_banned` WHERE `id` = '$id'");
         return true;
     }
@@ -303,7 +303,7 @@ class account
     */
     public function unlock($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $this->mysql->send("UPDATE `account` SET `locked` = '0' WHERE `id` = '$id'");
         return true;
     }

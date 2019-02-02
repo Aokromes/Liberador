@@ -1,14 +1,14 @@
 <?php
 if($_GET['act']=="do") {
   include("tmsdk.include.php");
-  $_config['mysql_host'] = 'localhost';
-  $_config['mysql_port'] = 3306;
+  $_config['mysqli_host'] = '127.0.0.1';
+  $_config['mysqli_port'] = 3306;
   $_config['mysql_user'] = "database";
   $_config['mysql_pass'] = "password";
   $_config['db_char'] = "characters";
   $_config['db_acct'] = "realmd";
-  $cdb = new conndb($_config['mysql_host'], $_config['mysql_port'], $_config['mysql_user'], $_config['mysql_pass'], $_config['db_char']);
-  $rdb = new conndb($_config['mysql_host'], $_config['mysql_port'], $_config['mysql_user'], $_config['mysql_pass'], $_config['db_acct']);
+  $cdb = new conndb($_config['mysqli_host'], $_config['mysqli_port'], $_config['mysqli_user'], $_config['mysqli_pass'], $_config['db_char']);
+  $rdb = new conndb($_config['mysqli_host'], $_config['mysqli_port'], $_config['mysqli_user'], $_config['mysqli_pass'], $_config['db_acct']);
   $char = new char($cdb);
   $act = new account($rdb);
   $auth = $act->login($_POST['user'],$_POST['pass']);
@@ -16,13 +16,18 @@ if($_GET['act']=="do") {
     $guid = $char->getGuid($_POST['char']);
     $aid = $act->getId($_POST['user']);
     $cid = $char->getAccountId($guid);
+    $nivel = $char->getLevelMangos($guid);
+    $clase = $char->getClass($guid);
     if($cid!=$aid) {
+	  echo "Los datos de la cuenta no coinciden.";
       die("Los datos de la cuenta no coinciden.");
     }
     $status = $char->getOnlineStatus($guid);
     if(!$status) {
       $home = $char->getHome($guid);
-      $char->setLocation($guid,$home['position_x'],$home['position_y'],$home['position_z'],$home['map']);
+    if($clase != 6 || ($clase == 6 && $nivel >61)) {
+      $char->setLocation($guid,$home['posX'],$home['posY'],$home['posZ'],$home['mapId']);
+    }
       $char->revive($guid);
       echo("<p style=\"color:#555555;font-family:Tahoma;font-size:13\">Personaje Liberado</p>");
     } else {

@@ -23,9 +23,9 @@ class creature
     */
     public function countSpawns($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `creature` WHERE `id` = '$id'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['count'];
     }
 
@@ -35,10 +35,10 @@ class creature
     */
     public function getGeneralInfo($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
 
         $sql = $this->mysql->retrieve("SELECT * FROM `creature_template` WHERE `entry` = '$id' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         $result['name'] = $row['name'];
         $result['subname'] = $row['subname'];
         $result['model_A'] = $row['modelid_A'];

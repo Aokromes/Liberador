@@ -26,13 +26,13 @@ class char
     */
     public function addSpell($guid, $spell, $active = 1, $disabled = 0)
     {
-        $guid = mysql_real_escape_string($guid);
-        $spell = mysql_real_escape_string($spell);
-        $active = mysql_real_escape_string($active);
-        $disabled = mysql_real_escape_string($disabled);
+        $guid = mysqli_real_escape_string($guid);
+        $spell = mysqli_real_escape_string($spell);
+        $active = mysqli_real_escape_string($active);
+        $disabled = mysqli_real_escape_string($disabled);
 
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `character_spell` WHERE `guid` = '$guid' AND `spell` = '$spell'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         if($row['count'] > 0) return false;
 
         $this->mysql->send("INSERT INTO `character_spell` (guid,spell,active,disabled) VALUES ('$guid','$spell','$active','$disabled')");
@@ -46,18 +46,18 @@ class char
     */
     public function adjustLevel($guid, $mod)
     {
-        $guid = mysql_real_escape_string($guid);
-        $adjust = mysql_real_escape_string($mod);
+        $guid = mysqli_real_escape_string($guid);
+        $adjust = mysqli_real_escape_string($mod);
         $adjust = intval($adjust);
         if(PROJECT == "mangos")
         {
             $sql = $this->mysql->retrieve("SELECT `level` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-            $row = mysql_fetch_array($sql);
+            $row = mysqli_fetch_array($sql);
             $lvl = $row['level']+$adjust;
             $this->mysql->send("UPDATE `characters` SET `level` = '$lvl' WHERE `guid` = '$guid' LIMIT 1");
         } else {
             $sql = $this->mysql->retrieve("SELECT `data` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-            $row = mysql_fetch_array($sql);
+            $row = mysqli_fetch_array($sql);
 
             $exp = explode(' ',$row['data']);
             // if the final level is 1 or more
@@ -79,19 +79,19 @@ class char
     */
     public function adjustMoney($guid, $mod)
     {
-        $guid = mysql_real_escape_string($guid);
-        $adjust = mysql_real_escape_string($mod);
+        $guid = mysqli_real_escape_string($guid);
+        $adjust = mysqli_real_escape_string($mod);
         $adjust = intval($adjust);
 
         if(PROJECT == "mangos")
         {
             $sql = $this->mysql->retrieve("SELECT `money` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-            $row = mysql_fetch_array($sql);
+            $row = mysqli_fetch_array($sql);
             $money = $row['money']+$adjust;
             $this->mysql->send("UPDATE `characters` SET `money` = '$money' WHERE `guid` = '$guid' LIMIT 1");
         } else {
             $sql = $this->mysql->retrieve("SELECT `data` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-            $row = mysql_fetch_array($sql);
+            $row = mysqli_fetch_array($sql);
 
             $exp = explode(' ',$row['data']);
             $exp[DATA_FIELD_MONEY] = $exp[DATA_FIELD_MONEY]+$adjust;
@@ -107,10 +107,10 @@ class char
     */
     public function getAccountId($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
 
         $sql = $this->mysql->retrieve("SELECT `account` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         return $row['account'];
     }
@@ -122,15 +122,15 @@ class char
     */
     public function getCharactersListFromAccountId($id)
     {
-        $id = mysql_real_escape_string($id);
+        $id = mysqli_real_escape_string($id);
 
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `characters` WHERE `account` = '$id'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         $result['0'] = $row['count'];
 
         $sql = $this->mysql->retrieve("SELECT `guid`, `name` FROM `characters` WHERE `account` = '$id'");
         $i = 1;
-        while($row = mysql_fetch_array($sql))
+        while($row = mysqli_fetch_array($sql))
         {
             $result[$i]['guid'] = $row['guid'];
             $result[$i]['name'] = $row['name'];
@@ -145,10 +145,10 @@ class char
       @param $guid the character's GUID
     */
     public function getClass($guid) {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
 
         $sql = $this->mysql->retrieve("SELECT `class` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['class'];
     }
 
@@ -158,10 +158,10 @@ class char
     */
     public function getDataField($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
 
         $sql = $this->mysql->retrieve("SELECT `data` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         return $row['data'];
     }
@@ -173,9 +173,9 @@ class char
     */
     public function getEquippedGear($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $sql = $this->mysql->retrieve("SELECT * FROM `character_inventory` WHERE `guid` = '$guid' AND `slot` < '19' AND `bag` = '0'");
-        while($row = mysql_fetch_array($sql))
+        while($row = mysqli_fetch_array($sql))
         {
             $slot = $row['slot'];
             $result[$slot]['item_entry'] = $row['item_template'];
@@ -191,11 +191,11 @@ class char
     */
     public function getFaction($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $ally = array("1", "3", "4", "7", "11");
 
         $sql = $this->mysql->retrieve("SELECT `race` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         if(in_array($row['race'], $ally))
         {
@@ -211,7 +211,7 @@ class char
     */
     public function getGender($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
 
         if(PROJECT == "mangos")
             $sql = $this->mysql->retrieve("SELECT `gender` FROM `characters` WHERE guid = $guid LIMIT 1");
@@ -219,7 +219,7 @@ class char
             // took from mmfpm
             $sql = $this->mysql->retrieve("SELECT mid(lpad( hex( CAST(substring_index(substring_index(data,' ',".(DATA_FIELD_GENDER+1)."),' ',-1) as unsigned) ),8,'0'),4,1) as gender FROM `characters` WHERE guid = $guid LIMIT 1");
 
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['gender'];
     }
 
@@ -229,12 +229,12 @@ class char
     */
     public function getGuid($name)
     {
-        $name = mysql_real_escape_string($name);
+        $name = mysqli_real_escape_string($name);
         $name = strtolower($name);
         $name = ucfirst($name);
 
         $sql = $this->mysql->retrieve("SELECT `guid` FROM `characters` WHERE `name` = '$name' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         return $row['guid'];
     }
@@ -246,14 +246,14 @@ class char
     */
     public function getGuildRank($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $sql = $this->mysql->retrieve("SELECT `guildid`,`rank` FROM `guild_member` WHERE `guid` = '$guid' LIMIT 1");
-        if(mysql_affected_rows() == 0) return false;
-        $row = mysql_fetch_array($sql);
+        if(mysqli_affected_rows() == 0) return false;
+        $row = mysqli_fetch_array($sql);
 
         $sql = $this->mysql->retrieve("SELECT `rname`, `rid` FROM `guild_rank` WHERE `rid` = '".$row['rank']."' AND `guildid` = '".$row['guildid']."' LIMIT 1");
-        if(mysql_affected_rows() == 0) return false;
-        $row = mysql_fetch_array($sql);
+        if(mysqli_affected_rows() == 0) return false;
+        $row = mysqli_fetch_array($sql);
 
         $result = array(
             "rid" => $row['rid'],
@@ -269,8 +269,8 @@ class char
     */
     public function getHome($guid)
     {
-        $sql = $this->mysql->retrieve("SELECT `map`, `zone`, `position_x`, `position_y`, `position_z` FROM `character_homebind` WHERE `guid` = '$guid'");
-        $result = mysql_fetch_array($sql);
+        $sql = $this->mysql->retrieve("SELECT `mapId`, `zoneId`, `posX`, `posY`, `posZ` FROM `character_homebind` WHERE `guid` = '$guid'");
+        $result = mysqli_fetch_array($sql);
         return $result;
     }
 
@@ -292,15 +292,15 @@ class char
     */
     public function getItemCount($guid, $item)
     {
-        $guid = mysql_real_escape_string($guid);
-        $item = mysql_real_escape_string($item);
+        $guid = mysqli_real_escape_string($guid);
+        $item = mysqli_real_escape_string($item);
 
         $sql = $this->mysql->retrieve("SELECT `item` FROM `character_inventory` WHERE `guid` = '$guid' AND `item_template` = '$item'");
         $i = 0;
-        while($row = mysql_fetch_array($sql))
+        while($row = mysqli_fetch_array($sql))
         {
             $sqlb = $this->mysql->retrieve("SELECT `data` FROM `item_instance` WHERE `guid` = '$row[item]'");
-            $rowb = mysql_fetch_array($sqlb);
+            $rowb = mysqli_fetch_array($sqlb);
 
             $count = $count + tmsdk::getDataOffset($rowb['data'],14);
             $i++;
@@ -323,12 +323,9 @@ class char
     */
     public function getLevelMangos($guid)
     {
-        if(PROJECT != "mangos")
-            return false;
-
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $sql = $this->mysql->retrieve("SELECT `level` FROM `characters` WHERE `guid` = '$guid'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['level'];
     }
 
@@ -339,9 +336,9 @@ class char
     */
     public function getMainBag($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $sql = $this->mysql->retrieve("SELECT * FROM `character_inventory` WHERE `guid` = '$guid' AND `slot` > '22' AND `slot` < '39'");
-        while($row = mysql_fetch_array($sql))
+        while($row = mysqli_fetch_array($sql))
         {
             $result[$row['slot']]['item'] = $row['item_template'];
             $result[$row['slot']]['guid'] = $row['item'];
@@ -371,9 +368,9 @@ class char
         if(PROJECT != "mangos")
             return false;
  
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $sql = $this->mysql->retrieve("SELECT `money` FROM `characters` WHERE `guid` = '$guid'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['money'];
     }
 
@@ -383,9 +380,9 @@ class char
     */
     public function getName($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $sql = $this->mysql->retrieve("SELECT `name` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['name'];
     }
 
@@ -395,7 +392,7 @@ class char
     public function getNumCharsOnline()
     {
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `characters` WHERE `online` = '1'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return intval($row['count']);
     }
 
@@ -406,7 +403,7 @@ class char
     public function getOnlineStatus($guid)
     {
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `characters` WHERE `guid` = '$guid' AND `online` = '1'");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
 
         if($row['count'] > 0) return true;
 
@@ -419,10 +416,10 @@ class char
     */
     public function getRace($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
 
         $sql = $this->mysql->retrieve("SELECT `race` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         return $row['race'];
     }
 
@@ -433,8 +430,8 @@ class char
     */
     public function removeSpell($guid, $spell)
     {
-        $guid = mysql_real_escape_string($guid);
-        $spell = mysql_real_escape_string($spell);
+        $guid = mysqli_real_escape_string($guid);
+        $spell = mysqli_real_escape_string($spell);
         $this->mysql->send("DELETE FROM `character_spell` WHERE `guid` = '$guid' AND `spell` = '$spell'");
         return true;
     }
@@ -446,7 +443,7 @@ class char
     */
     public function revive($guid)
     {
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
         $this->mysql->send("DELETE FROM `character_aura` WHERE `guid` = '".$guid."' AND `spell` = '20584' OR `guid` = '".$guid."' AND `spell` = '8326'");
         return true;
     }
@@ -458,8 +455,8 @@ class char
     */
     public function setAccountId($guid,$accountId)
     {
-        $guid = mysql_real_escape_string($guid);
-        $acct = mysql_real_escape_string($accountId);
+        $guid = mysqli_real_escape_string($guid);
+        $acct = mysqli_real_escape_string($accountId);
 
         $this->mysql->send("UPDATE `characters` SET `account` = '$acct' WHERE `guid` = '$guid' LIMIT 1");
         return true;
@@ -473,9 +470,9 @@ class char
     */
     public function setDataField($guid,$offset,$value)
     {
-        $guid = mysql_real_escape_string($guid);
-        $offset = mysql_real_escape_string($offset);
-        $val = mysql_real_escape_string($value);
+        $guid = mysqli_real_escape_string($guid);
+        $offset = mysqli_real_escape_string($offset);
+        $val = mysqli_real_escape_string($value);
         $val = intval($val);
 
         $data = $this->getDataField($guid);
@@ -492,8 +489,8 @@ class char
     */
     public function setHonor($guid, $newhonor)
     {
-        $guid = mysql_real_escape_string($guid);
-        $newhonor = mysql_real_escape_string($newhonor);
+        $guid = mysqli_real_escape_string($guid);
+        $newhonor = mysqli_real_escape_string($newhonor);
         $newhonor = intval($newhonor);
         if($newhonor < 0) $newhonor = 0;
 
@@ -508,8 +505,8 @@ class char
     */
     public function setLevel($guid, $newlevel)
     {
-        $guid = mysql_real_escape_string($guid);
-        $newlevel = mysql_real_escape_string($newlevel);
+        $guid = mysqli_real_escape_string($guid);
+        $newlevel = mysqli_real_escape_string($newlevel);
         $newlevel = intval($newlevel);
         if($newlevel < 1) $newlevel = 1;
 
@@ -532,12 +529,12 @@ class char
     */
     public function setLocation($guid, $x, $y, $z, $map, $zone="")
     {
-        $guid = mysql_real_escape_string($guid);
-        $x = mysql_real_escape_string($x);
-        $y = mysql_real_escape_string($y);
-        $z = mysql_real_escape_string($z);
-        $map = mysql_real_escape_string($map);
-        $zone = mysql_real_escape_string($zone);
+        $guid = mysqli_real_escape_string($guid);
+        $x = mysqli_real_escape_string($x);
+        $y = mysqli_real_escape_string($y);
+        $z = mysqli_real_escape_string($z);
+        $map = mysqli_real_escape_string($map);
+        $zone = mysqli_real_escape_string($zone);
 
         $query = "UPDATE `characters` SET `position_x` = '$x', `position_y` = '$y', `position_z` = '$z', `map` = '$map'";
         if($zone != "") $query .= " `zone` = '$zone'";
@@ -554,8 +551,8 @@ class char
     */
     public function setMoney($guid, $sumofmoney)
     {
-        $guid = mysql_real_escape_string($guid);
-        $sum = mysql_real_escape_string($sumofmoney);
+        $guid = mysqli_real_escape_string($guid);
+        $sum = mysqli_real_escape_string($sumofmoney);
         $sum = intval($sum);
         if($sum < 0) $sum = 0;
 
@@ -576,12 +573,12 @@ class char
     public function setName($guid,$newname)
     {
         if($newname == "") return false;
-        $newname = mysql_real_escape_string(strtolower($newname));
+        $newname = mysqli_real_escape_string(strtolower($newname));
         $newname = ucfirst($newname);
-        $guid = mysql_real_escape_string($guid);
+        $guid = mysqli_real_escape_string($guid);
 
         $sql = $this->mysql->retrieve("SELECT COUNT(*) AS `count` FROM `characters` WHERE `name` = '$newname' LIMIT 1");
-        $row = mysql_fetch_array($sql);
+        $row = mysqli_fetch_array($sql);
         if($row['count'] > 0) return false;
         $this->mysql->send("UPDATE `characters` SET `name` = '$newname' WHERE `guid` = '$guid' LIMIT 1");
         return true;
