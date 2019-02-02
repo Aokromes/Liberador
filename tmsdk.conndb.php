@@ -24,8 +24,8 @@ class conndb
     */
     public function __construct($db_host, $db_port, $db_user, $db_pass, $db_name)
     {
-        $this->mysql = @mysqli_connect($db_host.":".$db_port, $db_user, $db_pass, true) or die('Incorrect MySQL Information!');
-            mysqli_select_db($db_name,$this->mysql) or die(mysqli_error());
+        $this->mysql = @mysqli_connect($db_host.":".$db_port, $db_user, $db_pass, $db_name) or die('Incorrect MySQL Information!');
+            mysqli_select_db($this->mysql,$db_name) or die(mysqli_connect_error());
     }
 
     /**

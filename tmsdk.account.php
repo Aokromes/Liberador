@@ -145,8 +145,9 @@ class account
     */
     public function login($user,$pass)
     {
-        $user = mysqli_real_escape_string($user);
-        $pass = mysqli_real_escape_string($pass);
+        $con = @mysqli_connect($db_host.":".$db_port, $db_user, $db_pass, $db_name) or die('Incorrect MySQL Information meh!');
+        $user = mysqli_real_escape_string($con, $user);
+        $pass = mysqli_real_escape_string($con, $pass);
 
         $user = strtoupper($user);
         $pass = strtoupper($pass);
