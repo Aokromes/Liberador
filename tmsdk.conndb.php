@@ -43,7 +43,7 @@ class conndb
     */
     public function send($query)
     {
-        @mysqli_query($query,$this->mysql) or die(mysqli_error());
+        @mysqli_query($this->mysql,$query) or die(mysqli_error());
         $this->sqlog .= $query."\n";
     }
 
@@ -53,9 +53,15 @@ class conndb
     */
     public function retrieve($query)
     {
-        $sql = @mysqli_query($query,$this->mysql) or die(mysqli_error());
+        $sql = @mysqli_query($this->mysql,$query) or die(mysqli_connect_error());
         $this->sqlog .= $query."\n";
         return $sql;
+    }
+
+    public function escape_string($string)
+    {
+        $result = mysqli_real_escape_string($this->mysql, $string);
+        return $result;
     }
 }
 ?>

@@ -107,7 +107,7 @@ class char
     */
     public function getAccountId($guid)
     {
-        $guid = mysqli_real_escape_string($guid);
+        $guid = $this->mysql->escape_string($guid);
 
         $sql = $this->mysql->retrieve("SELECT `account` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
         $row = mysqli_fetch_array($sql);
@@ -145,7 +145,7 @@ class char
       @param $guid the character's GUID
     */
     public function getClass($guid) {
-        $guid = mysqli_real_escape_string($guid);
+        $guid = $this->mysql->escape_string($guid);
 
         $sql = $this->mysql->retrieve("SELECT `class` FROM `characters` WHERE `guid` = '$guid' LIMIT 1");
         $row = mysqli_fetch_array($sql);
@@ -229,7 +229,7 @@ class char
     */
     public function getGuid($name)
     {
-        $name = mysqli_real_escape_string($name);
+        $name = $this->mysql->escape_string($name);
         $name = strtolower($name);
         $name = ucfirst($name);
 
@@ -323,7 +323,7 @@ class char
     */
     public function getLevelMangos($guid)
     {
-        $guid = mysqli_real_escape_string($guid);
+        $guid = $this->mysql->escape_string($guid);
         $sql = $this->mysql->retrieve("SELECT `level` FROM `characters` WHERE `guid` = '$guid'");
         $row = mysqli_fetch_array($sql);
         return $row['level'];
@@ -443,7 +443,7 @@ class char
     */
     public function revive($guid)
     {
-        $guid = mysqli_real_escape_string($guid);
+        $guid = $this->mysql->escape_string($guid);
         $this->mysql->send("DELETE FROM `character_aura` WHERE `guid` = '".$guid."' AND `spell` = '20584' OR `guid` = '".$guid."' AND `spell` = '8326'");
         return true;
     }
@@ -529,12 +529,12 @@ class char
     */
     public function setLocation($guid, $x, $y, $z, $map, $zone="")
     {
-        $guid = mysqli_real_escape_string($guid);
-        $x = mysqli_real_escape_string($x);
-        $y = mysqli_real_escape_string($y);
-        $z = mysqli_real_escape_string($z);
-        $map = mysqli_real_escape_string($map);
-        $zone = mysqli_real_escape_string($zone);
+        $guid = $this->mysql->escape_string($guid);
+        $x = $this->mysql->escape_string($x);
+        $y = $this->mysql->escape_string($y);
+        $z = $this->mysql->escape_string($z);
+        $map = $this->mysql->escape_string($map);
+        $zone = $this->mysql->escape_string($zone);
 
         $query = "UPDATE `characters` SET `position_x` = '$x', `position_y` = '$y', `position_z` = '$z', `map` = '$map'";
         if($zone != "") $query .= " `zone` = '$zone'";

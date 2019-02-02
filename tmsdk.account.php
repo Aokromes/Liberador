@@ -80,7 +80,7 @@ class account
     */
     public function getId($username)
     {
-        $username = mysqli_real_escape_string($username);
+        $username = $this->mysql->escape_string($user);
         $sql = $this->mysql->retrieve("SELECT `id` FROM `account` WHERE `username` = '$username' LIMIT 1");
         $row = mysqli_fetch_array($sql);
         return $row['id'];
@@ -145,9 +145,8 @@ class account
     */
     public function login($user,$pass)
     {
-        $con = @mysqli_connect($db_host.":".$db_port, $db_user, $db_pass, $db_name) or die('Incorrect MySQL Information meh!');
-        $user = mysqli_real_escape_string($con, $user);
-        $pass = mysqli_real_escape_string($con, $pass);
+        $user = $this->mysql->escape_string($user);
+        $pass = $this->mysql->escape_string($pass);
 
         $user = strtoupper($user);
         $pass = strtoupper($pass);
